@@ -153,6 +153,11 @@ def main():
 
             st.plotly_chart(fig_returns)
 
+            # Display mean and standard deviation under the returns figure
+            st.markdown(f"**Estadísticas de los rendimientos:**")
+            st.markdown(f"- **{selected_ticker}:** Media = {mean_selected:.4f}, Sigma (σ) = {std_selected:.4f}")
+            st.markdown(f"- **{reference_ticker}:** Media = {mean_reference:.4f}, Sigma (σ) = {std_reference:.4f}")
+
             # Adjust returns within the limits
             adjusted_returns_selected = adjust_returns_within_limits(
                 returns_data[selected_ticker], mean_selected, std_selected, std_multiplier
