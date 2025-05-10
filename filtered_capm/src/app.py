@@ -223,43 +223,43 @@ def main():
             st.plotly_chart(fig_scatter_adjusted)
             st.markdown(f"**Estadísticas del ajuste (ajustado):**\n- Pendiente: {slope_adjusted:.4f}\n- Intercepto: {intercept_adjusted:.4f}\n- R²: {r_squared_adjusted:.4f}")
 
-            # Scatter plot for returns within sigma range for both tickers
-            mask_selected = (
-                (returns_data[selected_ticker] >= mean_selected - std_multiplier * std_selected) &
-                (returns_data[selected_ticker] <= mean_selected + std_multiplier * std_selected)
-            )
-            mask_reference = (
-                (returns_data[reference_ticker] >= mean_reference - std_multiplier * std_reference) &
-                (returns_data[reference_ticker] <= mean_reference + std_multiplier * std_reference)
-            )
-            mask_both = mask_selected & mask_reference
-            returns_within_sigma = returns_data[mask_both]
+            # # Scatter plot for returns within sigma range for both tickers
+            # mask_selected = (
+            #     (returns_data[selected_ticker] >= mean_selected - std_multiplier * std_selected) &
+            #     (returns_data[selected_ticker] <= mean_selected + std_multiplier * std_selected)
+            # )
+            # mask_reference = (
+            #     (returns_data[reference_ticker] >= mean_reference - std_multiplier * std_reference) &
+            #     (returns_data[reference_ticker] <= mean_reference + std_multiplier * std_reference)
+            # )
+            # mask_both = mask_selected & mask_reference
+            # returns_within_sigma = returns_data[mask_both]
 
-            if not returns_within_sigma.empty:
-                slope_sigma, intercept_sigma, r_squared_sigma = calculate_fit(
-                    returns_within_sigma[reference_ticker], returns_within_sigma[selected_ticker]
-                )
-                fig_scatter_sigma = px.scatter(
-                    returns_within_sigma,
-                    x=reference_ticker,
-                    y=selected_ticker,
-                    title=f"Dispersión dentro de ±{std_multiplier}σ: {reference_ticker} vs {selected_ticker}",
-                    labels={reference_ticker: f"Rendimientos {reference_ticker}", selected_ticker: f"Rendimientos {selected_ticker}"}
-                )
-                fig_scatter_sigma.add_scatter(
-                    x=returns_within_sigma[reference_ticker],
-                    y=slope_sigma * returns_within_sigma[reference_ticker] + intercept_sigma,
-                    mode="lines",
-                    name="Ajuste lineal",
-                    line=dict(color="green")
-                )
-                st.plotly_chart(fig_scatter_sigma)
-                st.markdown(
-                    f"**Estadísticas del ajuste (dentro de ±{std_multiplier}σ):**\n"
-                    f"- Pendiente: {slope_sigma:.4f}\n"
-                    f"- Intercepto: {intercept_sigma:.4f}\n"
-                    f"- R²: {r_squared_sigma:.4f}"
-                )
+            # if not returns_within_sigma.empty:
+            #     slope_sigma, intercept_sigma, r_squared_sigma = calculate_fit(
+            #         returns_within_sigma[reference_ticker], returns_within_sigma[selected_ticker]
+            #     )
+            #     fig_scatter_sigma = px.scatter(
+            #         returns_within_sigma,
+            #         x=reference_ticker,
+            #         y=selected_ticker,
+            #         title=f"Dispersión dentro de ±{std_multiplier}σ: {reference_ticker} vs {selected_ticker}",
+            #         labels={reference_ticker: f"Rendimientos {reference_ticker}", selected_ticker: f"Rendimientos {selected_ticker}"}
+            #     )
+            #     fig_scatter_sigma.add_scatter(
+            #         x=returns_within_sigma[reference_ticker],
+            #         y=slope_sigma * returns_within_sigma[reference_ticker] + intercept_sigma,
+            #         mode="lines",
+            #         name="Ajuste lineal",
+            #         line=dict(color="green")
+            #     )
+            #     st.plotly_chart(fig_scatter_sigma)
+            #     st.markdown(
+            #         f"**Estadísticas del ajuste (dentro de ±{std_multiplier}σ):**\n"
+            #         f"- Pendiente: {slope_sigma:.4f}\n"
+            #         f"- Intercepto: {intercept_sigma:.4f}\n"
+            #         f"- R²: {r_squared_sigma:.4f}"
+            #     )
 
             # Scatter plot for returns outside sigma range for both tickers
             mask_selected_out = (
