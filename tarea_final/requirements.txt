@@ -2,3 +2,7 @@ yfinance
 plotly
 pandas
 numpy
+requests
+zipfile36
+streamlit
+scipy
