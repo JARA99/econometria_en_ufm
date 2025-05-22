@@ -60,9 +60,9 @@ def show_portfolio_results(
         with col2:
             st.metric(label="Desviación estándar del portafolio", value=f"{p_std:.2f} %")
         with col3:
-            st.metric(label="Sharpe Ratio del portafolio", value=f"{p_sharpe:.2f}")
+            st.metric(label="Sharpe", value=f"{p_sharpe:.2f}")
         with col4:
-            st.metric(label="Jensen's Alpha", value=f"{alpha:.4f}" if alpha is not None else "-")
+            st.metric(label="Alpha de Jensen", value=f"{alpha:.4f}" if alpha is not None else "-")
 
     # --- Investment allocation table using provided prices ---
     if prices is not None and not prices.empty:
@@ -161,6 +161,32 @@ def show_portfolio_results(
                     "Simulado": f"{real_vals[i]:.4f}" if not np.isnan(real_vals[i]) else "-",
                     "Probabilidad Hipótesis": f"{1-p_val:.4f}" if not np.isnan(p_val) else "-"
                 })
+
+            st.subheader("Valores obtenidos durante la simulación")
+
+            port_sharpe = port_mean / port_std if port_std != 0 else np.nan
+            
+            sim_cols = st.columns(4)
+
+            if yearly:
+                port_mean = port_mean * 252
+                port_std = port_std * np.sqrt(252)
+                if compare_vals is not None:
+                    compare_vals = (compare_vals[0] * 252, compare_vals[1] * np.sqrt(252), compare_vals[2], compare_vals[3])
+
+            with sim_cols[0]:
+                st.metric(label="Media simulada", value=f"{port_mean:.2f} %",
+                          delta=f"{((port_mean - p_mean)/abs(p_mean)):.2f} %")
+            with sim_cols[1]:
+                st.metric(label="Desviación estándar simulada", value=f"{port_std:.2f} %",
+                          delta=f"{((port_std - p_std)/abs(p_std)):.2f} %", delta_color="inverse")
+            with sim_cols[2]:
+                st.metric(label="Sharpe simulado", value=f"{port_sharpe:.2f}",
+                          delta=f"{((port_sharpe - p_sharpe)/abs(p_sharpe)):.2f} %")
+            with sim_cols[3]:
+                st.metric(label="Alpha de Jensen simulado", value=f"{real_alpha:.4f}" if real_alpha is not None else "-",
+                          delta=f"{((real_alpha - alpha)/abs(alpha)):.2f} %")
+
 
             st.subheader("Alpha y Betas en simulación vs estimados")
             prob_df = pd.DataFrame(prob_results)
