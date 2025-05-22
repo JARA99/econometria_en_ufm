@@ -7,7 +7,7 @@ from tabs import tab_0, tab_1, tab_2, tab_3
 price_type = 'Close'  # Tipo de precio a usar (Close, Open, High, Low)
 
 # Leer tickers desde el archivo CSV
-tickers_df = pd.read_csv("tickers.csv", header=None)
+tickers_df = pd.read_csv("https://raw.githubusercontent.com/JARA99/econometria_en_ufm/refs/heads/main/tarea_final/tickers.csv", header=None)
 all_tickers = tickers_df[0].tolist()
 
 st.title("Optimización de portafolio")
