@@ -31,10 +31,11 @@ def get_fama_french_factors():
         df[col] = pd.to_numeric(df[col], errors="coerce")
     return df
 
-@st.cache_data(show_spinner=False)
+# @st.cache_data(show_spinner=False)
 def get_ticker_histories(tickers, price_type="Close"):
     # Elimina duplicados manteniendo el orden
     histories = []
+    price_histories = []
     failed_tickers = []
     valid_tickers = []
     for ticker in tickers:
@@ -45,6 +46,8 @@ def get_ticker_histories(tickers, price_type="Close"):
                 selected.columns = [ticker]
                 histories.append(selected)
                 valid_tickers.append(ticker)
+                # Save price history for this ticker
+                price_histories.append(selected)
             else:
                 failed_tickers.append(ticker)
         except Exception as e:
@@ -67,6 +70,23 @@ def get_ticker_histories(tickers, price_type="Close"):
 
         # Unir por fecha (índice)
         combined = returns.join(ff_factors, how='left')
-        return combined, failed_tickers, valid_tickers       
+
+        # Also return the price dataframe (without shifting)
+        prices = df.copy()
+        return combined, prices, failed_tickers, valid_tickers       
     else:
-        return ff_factors, tickers, []  # Todos fallaron
+        return ff_factors, pd.DataFrame(), tickers, []  # Todos fallaron
+
+def get_mean_and_std(returns_df, weights):
+    # Get the mean returns and return it as a matrix
+    mean_returns = returns_df.mean().values.reshape(-1, 1)
+    # Get the covariance matrix
+    cov_matrix = returns_df.cov().values
+    # Get the weights as a matrix
+    weights_matrix = np.array(weights).reshape(-1, 1)
+    # Calculate the portfolio mean and variance
+    port_mean = np.dot(weights_matrix.T, mean_returns)[0, 0]
+    port_variance = np.dot(weights_matrix.T, np.dot(cov_matrix, weights_matrix))[0, 0]
+    port_std = np.sqrt(port_variance)
+    port_sharpe = port_mean / port_std
+    return port_mean, port_std, port_sharpe
